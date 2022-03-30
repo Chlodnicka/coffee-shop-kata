@@ -1,1 +1,0 @@
-https://medium.com/@migpimenta/the-best-code-kata-ever-61722511ebc
