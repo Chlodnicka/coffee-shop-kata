@@ -14,10 +14,7 @@ final class CustomerInMemoryRepository implements CustomerRepository
 
     public function create(string $email): void
     {
-        $this->memory[$email] = [
-            'points'     => 0,
-            'freeCoffee' => 0
-        ];
+        $this->memory[$email] = ['email' => $email];
     }
 
     public function get(string $email): ?array

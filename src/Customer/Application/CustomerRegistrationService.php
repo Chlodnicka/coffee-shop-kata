@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace CoffeeShop\Customer\Application;
 
+use CoffeeShop\LoyaltyProgram\Application\LoyaltyService;
 use CoffeeShop\SharedKernel\EmailValidator;
 
 final class CustomerRegistrationService
 {
-    public function __construct(private EmailValidator $emailValidator, private CustomerRepository $customerRepository)
-    {
+    public function __construct(
+        private EmailValidator $emailValidator,
+        private CustomerRepository $customerRepository,
+        private LoyaltyService $loyaltyService
+    ) {
     }
 
     public function create(string $email): void
@@ -17,6 +21,7 @@ final class CustomerRegistrationService
         $this->validateEmail($email);
         $this->checkIfCustomerDoesNotExist($email);
         $this->customerRepository->create($email);
+        $this->loyaltyService->enroll($email);
     }
 
     private function validateEmail(string $email): void
@@ -29,7 +34,7 @@ final class CustomerRegistrationService
     private function checkIfCustomerDoesNotExist(string $email): void
     {
         if ($this->customerRepository->get($email)) {
-            throw new UserAlreadyExists($email);
+            throw new CustomerAlreadyExists($email);
         }
     }
 }

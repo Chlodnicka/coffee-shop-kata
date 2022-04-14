@@ -4,9 +4,11 @@ namespace CoffeeShop\Tests\Customer\Application;
 
 use CoffeeShop\Customer\Application\CustomerRegistrationService;
 use CoffeeShop\Customer\Application\InvalidCustomerEmail;
-use CoffeeShop\Customer\Application\UserAlreadyExists;
+use CoffeeShop\Customer\Application\CustomerAlreadyExists;
+use CoffeeShop\LoyaltyProgram\Application\LoyaltyService;
 use CoffeeShop\SharedKernel\EmailValidator;
 use CoffeeShop\Tests\Customer\Fixture\CustomerInMemoryRepository;
+use CoffeeShop\Tests\LoyaltyProgram\Fixture\LoyaltyInMemoryRepository;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -19,7 +21,11 @@ class CustomerRegistrationServiceTest extends TestCase
         // Given
         $email = 'valid@email.com';
         $customerRepository = new CustomerInMemoryRepository();
-        $customerService = new CustomerRegistrationService(new EmailValidator(), $customerRepository);
+        $customerService = new CustomerRegistrationService(
+            new EmailValidator(),
+            $customerRepository,
+            new LoyaltyService(new LoyaltyInMemoryRepository())
+        );
 
         // When
         $customerService->create($email);
@@ -31,7 +37,7 @@ class CustomerRegistrationServiceTest extends TestCase
     public function testShouldNotCreateCustomerBecauseHeAlreadyExists(): void
     {
         // Expect
-        $this->expectException(UserAlreadyExists::class);
+        $this->expectException(CustomerAlreadyExists::class);
 
         // Given
         $email = 'valid@email.com';
@@ -43,7 +49,11 @@ class CustomerRegistrationServiceTest extends TestCase
                 ]
             ]
         );
-        $customerService = new CustomerRegistrationService(new EmailValidator(), $customerRepository);
+        $customerService = new CustomerRegistrationService(
+            new EmailValidator(),
+            $customerRepository,
+            new LoyaltyService(new LoyaltyInMemoryRepository())
+        );
 
         // When
         $customerService->create($email);
@@ -56,7 +66,11 @@ class CustomerRegistrationServiceTest extends TestCase
 
         // Given
         $email = 'someinvalidemail.com';
-        $customerService = new CustomerRegistrationService(new EmailValidator(), new CustomerInMemoryRepository());
+        $customerService = new CustomerRegistrationService(
+            new EmailValidator(),
+            new CustomerInMemoryRepository(),
+            new LoyaltyService(new LoyaltyInMemoryRepository())
+        );
 
         // When
         $customerService->create($email);
